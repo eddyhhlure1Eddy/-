@@ -68,10 +68,44 @@ class SearchPanel(ctk.CTkFrame):
         )
         self.btn_search.pack(side="right")
 
+        # Mood selection area
+        mood_frame = ctk.CTkFrame(self, fg_color="transparent")
+        mood_frame.pack(fill="x", padx=10, pady=(0, 5))
+
+        ctk.CTkLabel(
+            mood_frame,
+            text="Mood:",
+            font=ctk.CTkFont(size=11),
+            text_color=theme["text_secondary"]
+        ).pack(side="left", padx=(0, 5))
+
+        moods = [
+            ("Happy", "happy"),
+            ("Sad", "sad"),
+            ("Relax", "relaxed"),
+            ("Energy", "energetic"),
+            ("Love", "romantic"),
+            ("Focus", "focus"),
+        ]
+
+        for label, mood in moods:
+            btn = ctk.CTkButton(
+                mood_frame,
+                text=label,
+                width=50,
+                height=25,
+                corner_radius=12,
+                fg_color=theme["bg_tertiary"],
+                hover_color=theme["accent"],
+                font=ctk.CTkFont(size=10),
+                command=lambda m=mood: self._load_mood_playlist(m)
+            )
+            btn.pack(side="left", padx=2)
+
         # Status label
         self.lbl_status = ctk.CTkLabel(
             self,
-            text="Enter keywords to search",
+            text="Enter keywords or select a mood",
             font=ctk.CTkFont(size=11),
             text_color=theme["text_secondary"]
         )
@@ -261,6 +295,30 @@ class SearchPanel(ctk.CTkFrame):
         minutes = seconds // 60
         seconds = seconds % 60
         return f"{minutes:02d}:{seconds:02d}"
+
+    def _load_mood_playlist(self, mood: str):
+        """Load playlist based on mood"""
+        if self._searching:
+            return
+
+        self._searching = True
+        mood_names = {
+            "happy": "Happy",
+            "sad": "Sad",
+            "relaxed": "Relaxed",
+            "energetic": "Energetic",
+            "romantic": "Romantic",
+            "focus": "Focus"
+        }
+        self.lbl_status.configure(text=f"Loading {mood_names.get(mood, mood)} playlist...")
+
+        self._clear_results()
+
+        def mood_thread():
+            results = self._api.get_mood_playlist(mood, limit=30)
+            self.after(0, lambda: self._show_results(results))
+
+        threading.Thread(target=mood_thread, daemon=True).start()
 
     def focus_search(self):
         """Focus on search entry"""

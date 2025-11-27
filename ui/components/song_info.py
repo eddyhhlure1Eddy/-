@@ -141,11 +141,22 @@ class SongInfo(ctk.CTkFrame):
             except Exception:
                 pass
 
-        # Use default or emoji
+        # Use default or emoji - avoid setting image=None directly
         if self._default_cover:
             self.lbl_cover.configure(image=self._default_cover, text="")
         else:
-            self.lbl_cover.configure(image=None, text="\U0001F3B5")
+            # Create empty placeholder image to avoid TclError
+            try:
+                placeholder = Image.new("RGBA", self._cover_size, (0, 0, 0, 0))
+                empty_img = ctk.CTkImage(
+                    light_image=placeholder,
+                    dark_image=placeholder,
+                    size=self._cover_size
+                )
+                self.lbl_cover.configure(image=empty_img, text="\U0001F3B5")
+                self.lbl_cover._image = empty_img
+            except Exception:
+                pass
 
     def clear(self):
         """Clear song info"""

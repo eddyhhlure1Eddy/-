@@ -42,5 +42,49 @@
     "source": "netease",
     "cached_at": "2025-11-26T20:29:47.940089",
     "cover_path": null
+  },
+  "557640761": {
+    "id": "557640761",
+    "name": "辞九门回忆",
+    "artist": "解忧草",
+    "album": "辞.九门回忆",
+    "duration": 241815,
+    "local_path": "C:\\Users\\Administrator\\Desktop\\新建文件夹 (32)\\mini-music-player\\cache\\songs\\557640761_解忧草 - 辞九门回忆.mp3",
+    "source": "netease",
+    "cached_at": "2025-11-26T20:36:29.259888",
+    "cover_path": null
+  },
+  "1347524822": {
+    "id": "1347524822",
+    "name": "辞.九门回忆",
+    "artist": "解忧草",
+    "album": "辞.九门回忆",
+    "duration": 241815,
+    "local_path": "C:\\Users\\Administrator\\Desktop\\新建文件夹 (32)\\mini-music-player\\cache\\songs\\1347524822_解忧草 - 辞.九门回忆.mp3",
+    "source": "netease",
+    "cached_at": "2025-11-26T20:37:00.728229",
+    "cover_path": null
+  },
+  "3319649143": {
+    "id": "3319649143",
+    "name": "辞九门回忆+莫问归期DJ",
+    "artist": "路边墨缇斯",
+    "album": "",
+    "duration": 315582,
+    "local_path": "C:\\Users\\Administrator\\Desktop\\新建文件夹 (32)\\mini-music-player\\cache\\songs\\3319649143_路边墨缇斯 - 辞九门回忆+莫问归期DJ.mp3",
+    "source": "netease",
+    "cached_at": "2025-11-26T20:37:53.840433",
+    "cover_path": null
+  },
+  "": {
+    "id": "",
+    "name": "Love (Ft.Caitlyn Smith)",
+    "artist": "Tim Bergling",
+    "album": "",
+    "duration": 0,
+    "local_path": "C:\\Users\\Administrator\\Desktop\\新建文件夹 (32)\\mini-music-player\\cache\\songs\\_Tim Bergling - Love (Ft.Caitlyn Smith).mp3",
+    "source": "netease",
+    "cached_at": "2025-11-26T20:44:18.176525",
+    "cover_path": "C:\\Users\\Administrator\\Desktop\\新建文件夹 (32)\\mini-music-player\\cache\\covers\\.mp3"
   }
 }

@@ -6,6 +6,7 @@ import customtkinter as ctk
 from tkinter import filedialog
 from typing import Optional
 import threading
+import random
 
 from config import (
     APP_NAME,
@@ -396,6 +397,8 @@ class MainWindow(ctk.CTk):
     def _on_play_pause(self):
         """Handle play/pause"""
         if self._playlist.is_empty():
+            # Auto-load random mood playlist
+            self._load_random_mood_playlist()
             return
 
         if self._engine.get_current_path() is None:
@@ -408,6 +411,71 @@ class MainWindow(ctk.CTk):
         else:
             self._engine.toggle_pause()
             self.player_controls.set_playing(self._engine.is_playing())
+
+    def _load_random_mood_playlist(self):
+        """Load a random mood playlist and start playing"""
+        moods = ["happy", "sad", "relaxed", "energetic", "romantic", "focus"]
+        mood = random.choice(moods)
+
+        self.song_info.update_info(
+            title=f"Loading {mood.capitalize()} playlist...",
+            artist="Please wait",
+            album="",
+            cover_data=None
+        )
+
+        def load_thread():
+            songs = self._netease.get_mood_playlist(mood, limit=30)
+            if songs:
+                self.after(0, lambda: self._start_mood_playback(songs))
+            else:
+                self.after(0, lambda: self.song_info.update_info(
+                    title="Failed to load",
+                    artist="Check network",
+                    album="",
+                    cover_data=None
+                ))
+
+        threading.Thread(target=load_thread, daemon=True).start()
+
+    def _start_mood_playback(self, online_songs: list):
+        """Start playing the mood playlist"""
+        if not online_songs:
+            return
+
+        # Clear current playlist
+        self._playlist.clear()
+        self.playlist_panel.clear()
+
+        # Get URLs and add all songs to playlist
+        added_count = 0
+        for online_song in online_songs:
+            if not online_song.play_url:
+                online_song.play_url = self._netease.get_play_url(online_song.id)
+            if online_song.play_url:
+                song = Song(
+                    path=online_song.play_url,
+                    title=online_song.name,
+                    artist=online_song.artist,
+                    album=online_song.album,
+                    duration=online_song.duration
+                )
+                self._playlist.add_song(song)
+                added_count += 1
+
+        # Update playlist panel
+        self.playlist_panel.set_songs(self._playlist.songs)
+
+        # Start playing first song
+        if not self._playlist.is_empty():
+            self._playlist.set_current_index(0)
+            song = self._playlist.get_current_song()
+            if song:
+                self._play_song(song)
+                self.playlist_panel.select_song(0)
+
+        # Switch to playlist tab
+        self.tabview.set("Playlist")
 
     def _on_prev(self):
         """Handle previous"""
