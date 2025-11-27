@@ -1,0 +1,46 @@
+{
+  "1809815407": {
+    "id": "1809815407",
+    "name": "111",
+    "artist": "Thuy",
+    "album": "111",
+    "duration": 174424,
+    "local_path": "C:\\Users\\Administrator\\Desktop\\新建文件夹 (32)\\mini-music-player\\cache\\songs\\1809815407_Thuy - 111.mp3",
+    "source": "netease",
+    "cached_at": "2025-11-26T20:26:39.395008",
+    "cover_path": null
+  },
+  "2141770031": {
+    "id": "2141770031",
+    "name": "ハート111",
+    "artist": "ゆーり",
+    "album": "ハート111",
+    "duration": 112152,
+    "local_path": "C:\\Users\\Administrator\\Desktop\\新建文件夹 (32)\\mini-music-player\\cache\\songs\\2141770031_ゆーり - ハート111.mp3",
+    "source": "netease",
+    "cached_at": "2025-11-26T20:26:53.247101",
+    "cover_path": null
+  },
+  "1330348068": {
+    "id": "1330348068",
+    "name": "起风了",
+    "artist": "买辣椒也用券",
+    "album": "起风了",
+    "duration": 325868,
+    "local_path": "C:\\Users\\Administrator\\Desktop\\新建文件夹 (32)\\mini-music-player\\cache\\songs\\1330348068_买辣椒也用券 - 起风了.mp3",
+    "source": "netease",
+    "cached_at": "2025-11-26T20:29:21.877369",
+    "cover_path": null
+  },
+  "1931434848": {
+    "id": "1931434848",
+    "name": "起风了（2018）翻自买辣椒也用卷",
+    "artist": "旧忆",
+    "album": "起风了",
+    "duration": 175255,
+    "local_path": "C:\\Users\\Administrator\\Desktop\\新建文件夹 (32)\\mini-music-player\\cache\\songs\\1931434848_旧忆 - 起风了（2018）翻自买辣椒也用卷.mp3",
+    "source": "netease",
+    "cached_at": "2025-11-26T20:29:47.940089",
+    "cover_path": null
+  }
+}
