@@ -18,12 +18,14 @@ class SearchPanel(ctk.CTkFrame):
         master,
         on_song_play: Optional[Callable[[OnlineSong], None]] = None,
         on_song_add: Optional[Callable[[OnlineSong], None]] = None,
+        on_mood_play: Optional[Callable[[List[OnlineSong]], None]] = None,
         **kwargs
     ):
         super().__init__(master, **kwargs)
 
         self._on_song_play = on_song_play
         self._on_song_add = on_song_add
+        self._on_mood_play = on_mood_play
         self._api = NeteaseAPI()
         self._results: List[OnlineSong] = []
         self._result_frames: List[ctk.CTkFrame] = []
@@ -297,7 +299,7 @@ class SearchPanel(ctk.CTkFrame):
         return f"{minutes:02d}:{seconds:02d}"
 
     def _load_mood_playlist(self, mood: str):
-        """Load playlist based on mood"""
+        """Load playlist based on mood and start playing"""
         if self._searching:
             return
 
@@ -316,9 +318,19 @@ class SearchPanel(ctk.CTkFrame):
 
         def mood_thread():
             results = self._api.get_mood_playlist(mood, limit=30)
-            self.after(0, lambda: self._show_results(results))
+            self.after(0, lambda: self._on_mood_loaded(results))
 
         threading.Thread(target=mood_thread, daemon=True).start()
+
+    def _on_mood_loaded(self, results: List[OnlineSong]):
+        """Handle mood playlist loaded"""
+        self._searching = False
+        if results and self._on_mood_play:
+            self._on_mood_play(results)
+        elif results:
+            self._show_results(results)
+        else:
+            self.lbl_status.configure(text="Failed to load playlist")
 
     def focus_search(self):
         """Focus on search entry"""

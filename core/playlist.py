@@ -22,7 +22,11 @@ class Song:
 
     def __post_init__(self):
         if not self.title:
-            self.title = Path(self.path).stem
+            # Don't extract from URL
+            if self.path.startswith("http://") or self.path.startswith("https://"):
+                self.title = "Unknown Title"
+            else:
+                self.title = Path(self.path).stem
 
 
 @dataclass

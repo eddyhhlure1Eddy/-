@@ -221,7 +221,8 @@ class MainWindow(ctk.CTk):
         self.search_panel = SearchPanel(
             tab_search,
             on_song_play=self._on_online_song_play,
-            on_song_add=self._on_online_song_add
+            on_song_add=self._on_online_song_add,
+            on_mood_play=self._start_mood_playback
         )
         self.search_panel.pack(fill="both", expand=True)
 
@@ -443,25 +444,49 @@ class MainWindow(ctk.CTk):
         if not online_songs:
             return
 
+        self.song_info.update_info(
+            title="Loading playlist...",
+            artist=f"{len(online_songs)} songs",
+            album="",
+            cover_data=None
+        )
+
+        def load_urls():
+            songs_with_urls = []
+            for online_song in online_songs:
+                if not online_song.play_url:
+                    online_song.play_url = self._netease.get_play_url(online_song.id)
+                if online_song.play_url:
+                    songs_with_urls.append(online_song)
+            self.after(0, lambda: self._finish_mood_playback(songs_with_urls))
+
+        threading.Thread(target=load_urls, daemon=True).start()
+
+    def _finish_mood_playback(self, online_songs: list):
+        """Finish loading and start playback"""
+        if not online_songs:
+            self.song_info.update_info(
+                title="Failed to load",
+                artist="No playable songs",
+                album="",
+                cover_data=None
+            )
+            return
+
         # Clear current playlist
         self._playlist.clear()
         self.playlist_panel.clear()
 
-        # Get URLs and add all songs to playlist
-        added_count = 0
+        # Add all songs to playlist
         for online_song in online_songs:
-            if not online_song.play_url:
-                online_song.play_url = self._netease.get_play_url(online_song.id)
-            if online_song.play_url:
-                song = Song(
-                    path=online_song.play_url,
-                    title=online_song.name,
-                    artist=online_song.artist,
-                    album=online_song.album,
-                    duration=online_song.duration
-                )
-                self._playlist.add_song(song)
-                added_count += 1
+            song = Song(
+                path=online_song.play_url,
+                title=online_song.name,
+                artist=online_song.artist,
+                album=online_song.album,
+                duration=online_song.duration
+            )
+            self._playlist.add_song(song)
 
         # Update playlist panel
         self.playlist_panel.set_songs(self._playlist.songs)
@@ -536,13 +561,17 @@ class MainWindow(ctk.CTk):
     def _play_song(self, song: Song):
         """Play a song"""
         self._current_online_song = None
+        self._current_cover_data = None
 
         if self._engine.load(song.path):
             self._engine.play()
             self.player_controls.set_playing(True)
 
-            metadata = MetadataReader.read(song.path)
-            self._current_cover_data = metadata.get("cover_data")
+            # Only read metadata for local files
+            is_url = song.path.startswith("http://") or song.path.startswith("https://")
+            if not is_url:
+                metadata = MetadataReader.read(song.path)
+                self._current_cover_data = metadata.get("cover_data")
 
             self.song_info.update_info(
                 title=song.title,
@@ -553,14 +582,17 @@ class MainWindow(ctk.CTk):
 
             self._tray.update_title(f"{song.title} - {song.artist}")
 
-            duration = self._engine.get_duration()
-            if duration > 0:
-                self.progress_bar.set_duration(
-                    self._engine.get_duration_formatted(),
-                    duration
-                )
-
+            self.after(500, self._update_duration)
             self.mini_lyrics.clear()
+
+    def _update_duration(self):
+        """Update progress bar duration"""
+        duration = self._engine.get_duration()
+        if duration > 0:
+            self.progress_bar.set_duration(
+                self._engine.get_duration_formatted(),
+                duration
+            )
 
     def _on_online_song_play(self, online_song: OnlineSong):
         """Play online song"""
